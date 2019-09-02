@@ -1,0 +1,12 @@
+{
+    "name": "homework8",
+    "version": "1.0.0",
+    "private": true,
+    "dependencies": {
+        "express": "latest",
+        "request": "latest"
+    },
+    "scripts": {
+        "start": "node app.js"
+    }
+}

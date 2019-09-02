@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+    <title>Homework8</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.12/angular-material.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="search.css">
+    
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-messages.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.12/angular-material.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-svg-round-progressbar/0.4.8/roundProgress.min.js"></script>
+    <script src="search.js"></script>
+</head>
+<body ng-app="spApp" ng-cloak ng-controller="spController">
+    
+    
+    <div id="div-form" class="bg-black text-white card w1000 p0140 m10 mobile-m10">
+        <div class="card-body mobile-p0">
+            <form action="" method="GET" ng-submit="submitForm($event)">
+                <div id="form-title" class="text-center fz28 mb-4">Product Search</div>
+                <div id="div-input">
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-form-label" for="keyword">Keyword<span class="text-danger">*</span></label>
+                        <div class="col-lg-7">
+                            <input class="form-control" ng-class="{'is-invalid':keyword_errmsg.length>0}" placeholder="Enter Product Name (eg. iPhone 8)" type="text" ng-model="form.keyword" id="keyword" ng-change="check_keyword_change()" ng-blur="check_keyword_ok()">
+                            <small class="text-danger">{{keyword_errmsg}}</small>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-form-label" for="category">Category</label>
+                        <div class="col-lg-3">
+                            <select class="custom-select" ng-model="form.category" id="category">
+                                <option value="0">All Categories</option>
+                                <option value="550">Art</option>
+                                <option value="2984">Baby</option>
+                                <option value="267">Books</option>
+                                <option value="11450">Clothing, Shoes &amp; Accessories</option>
+                                <option value="58058">Computers/Tablets &amp; Networking</option>
+                                <option value="26395">Health &amp; Beauty</option>
+                                <option value="11233">Music</option>
+                                <option value="1249">VideoGames &amp; Consoles</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-form-label">Condition</label>
+                        <div class="col-lg-9">
+                            <div class="form-check form-check-inline height100">
+                                <input class="form-check-input" type="checkbox" ng-model="form.checkbox_new" id="checkbox-new" value="New">
+                                <label class="form-check-label" for="checkbox-new">New</label>
+                            </div>
+                            <div class="form-check form-check-inline height100">
+                                <input class="form-check-input" type="checkbox" ng-model="form.checkbox_used" id="checkbox-used" value="Used">
+                                <label class="form-check-label" for="checkbox-used">Used</label>
+                            </div>
+                            <div class="form-check form-check-inline height100">
+                                <input class="form-check-input" type="checkbox" ng-model="form.checkbox_unsp" id="checkbox-unsp" value="Unspecified">
+                                <label class="form-check-label" for="checkbox-unsp">Unspecified</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-form-label">Shipping Options</label>
+                        <div class="col-lg-9">
+                            <div class="form-check form-check-inline height100">
+                                <input class="form-check-input" type="checkbox" ng-model="form.checkbox_local" id="checkbox-local" value="LocalPickupOnly">
+                                <label class="form-check-label" for="checkbox-local">Local Pickup</label>
+                            </div>
+                            <div class="form-check form-check-inline height100">
+                                <input class="form-check-input" type="checkbox" ng-model="form.checkbox_free" id="checkbox-free" value="FreeShippingOnly">
+                                <label class="form-check-label" for="checkbox-free">Free Shipping</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3 col-form-label">Distance (Miles)</label>
+                        <div class="col-lg-3">
+                            <input class="form-control" type="number" ng-model="form.mile" id="mile" placeholder="10">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3">From<span class="text-danger">*</span></label>
+                        <div class="col-lg-7">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" ng-model="form.location" value="here" id="radio-here" checked ng-click="close_zip_required()">
+                                <label class="form-check-label" for="radio-here">Current Location</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" ng-model="form.location" value="zip" id="radio-zip">
+                                <label class="form-check-label" for="radio-zip">Other. Please specify zip code:</label>
+                            </div>
+                            <md-autocomplete 
+                                md-input-id="auto-complete-zip"
+                                ng-blur="check_zip_ok()"
+                                ng-click="autoclick()"
+                                md-no-cache="noCache" 
+                                md-search-text="form.zip"
+                                md-items="item in autoSearch(form.zip)" 
+                                md-item-text="item"
+                                md-min-length="1"
+                                md-clear-button="false"
+                                md-dropdown-items="5"
+                                md-dropdown-position="bottom"
+                                md-input-class="md-input form-control"
+                                class="rounded">
+                                <span>{{item}}</span>
+                            </md-autocomplete>
+                            <small class="text-danger">{{zip_errmsg}}</small>
+                        </div>
+                    </div>
+
+                </div>
+                <div id="div-submit">
+                    <button class="btn bg-white mr-4 ml-1" id="submit-search" type="submit" ng-click="go_searchList()" ng-disabled="!test_validity()" ng-model="button_submit"><i class="material-icons align-middle">search</i><span class="align-middle">Search</span></button>
+                    <button class="btn bg-white" type="button" ng-click="clearAll()"><i class="material-icons align-middle">clear_all</i><span class="align-middle">Clear</span></button>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+    <div id="div-nav">
+        <ul class="nav nav-pills d-flex justify-content-center">
+            <li class="nav-item">
+                <a class="nav-link nav-dark" ng-class="{active: show_result}" href="" ng-click="toggerShowResultWish()">Results</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link nav-dark" ng-class="{active: !show_result}" href="" ng-click="toggerShowResultWish()">Wish List</a>
+            </li>
+        </ul>
+    </div>
+    <div class="position-relative" ng-show="show_result">
+        <div class="div-anime" ng-show="showProduct" id="div-anime-0">
+            <div class="progress w1000 m0auto" ng-if="progressBar">
+                <div class="progress-bar progress-bar-animated progress-bar-striped" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div id="div-result-table" class="w1000 m0auto table1000" ng-if="search_result_err&&result_list.length>0">
+                <div id="div-result-table-detail" class="d-flex flex-row-reverse" ng-if="result_list.length>0">
+                    <button class="btn btn-light text-black" ng-disabled="savedSearchDetail==null" ng-click="go_saved_detail()">
+                        <span class="align-middle">Detail </span>
+                        <i class="material-icons align-middle">chevron_right</i>
+                    </button>
+                </div>
+                <table class="table table-striped table-dark table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Image</th>
+                            <th scope="col">Title</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Shipping</th>
+                            <th scope="col">Zip</th>
+                            <th scope="col">Seller</th>
+                            <th scope="col" class="w92">Wish List</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="result in show_result_list" ng-class="{'table-secondary':testResultHighlight(result.itemId)}">
+                            <td>{{result.index}}</td>
+                            <td><a href="{{result.galleryURL}}" target="_blank"><img ng-src="{{result.galleryURL}}" class="hw100"></a></td>
+                            <td>
+                                <div class="w300">
+                                    <md-tooltip>{{result.title}}</md-tooltip>
+                                    <a href="" ng-click="go_detail(result)" class="text-nowrap">{{result.shorten_title}}</a>
+                                </div>
+                            </td>
+                            <td>{{result.value}}</td>
+                            <td class="w124">{{result.shippingCost}}</td>
+                            <td>{{result.postalCode}}</td>
+                            <td class="text-uppercase breakword w234">{{result.seller}}</td>
+                            <td>
+                                <button class="btn bg-white" ng-click="addWishList(result)" ng-hide="inWishList(result)"><i class="material-icons align-middle">add_shopping_cart</i></button>
+                                <button class="btn bg-white cgold" ng-click="removeWishList(result)" ng-show="inWishList(result)"><i class="material-icons align-middle">remove_shopping_cart</i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+            </div>
+            <div id="div-pagination" class="w1000 m0auto" ng-if="search_result_err&&result_list.length>0">
+                <nav>
+                    <ul class="pagination d-flex justify-content-center flex-wrap">
+                        <li class="page-item" ng-class="{disabled:currentPage==0}">
+                            <a class="border-0 rounded-0 page-link black" href="" ng-click="setPage(currentPage-1)">
+                                <span class="no-decoration">&laquo; </span>
+                                <span class="decoration">Previous</span>
+                            </a>
+                        </li>
+                        <li class="page-item" ng-repeat="i in getPageNumber() track by $index">
+                            <a class="border-0 page-link black" href="" ng-click="setPage($index)" ng-class="{active:currentPage==$index}">
+                                <span class="decoration">{{$index+1}}</span>
+                            </a>
+                        </li>
+                        <li class="page-item" ng-class="{disabled:currentPage==pageMax-1}"><a class="border-0 rounded-0 page-link black" href="" ng-click="setPage(currentPage+1)"><span class="decoration">Next</span><span class="no-decoration"> &raquo;</span></a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="alert alert-warning mobile-mauto10 w1000 m0auto" role="alert" ng-if="!search_result_err">{{search_result_err_msg}}</div>
+        </div>
+        <div class="div-anime" ng-hide="showProduct" id="div-anime-1">
+            <div class="progress w1000 m0auto" ng-if="progressBarDetail">
+                <div class="progress-bar progress-bar-animated progress-bar-striped" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <nav class="w1000 m0auto mobile-mauto10" ng-show="search_detail_err&&detail_list!=null">
+                <div class="d-flex justify-content-center font-weight-bold fz20 text-center">{{detail_list.title}}</div>
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-light" ng-click="go_list()">
+                        <i class="material-icons align-middle">chevron_left</i>
+                        <span class="align-middle"> List</span>
+                    </button>
+                    <div class="d-flex flex-row" ng-if="savedSearchDetail!=null">
+                        <a class="btn bg-white p-0" href="{{detail_list.facebookShareUrl}}" target="_blank"><img src="http://csci571.com/hw/hw8/Images/facebook.png" class="hw38"></a>
+                        <button class="btn btn-light" ng-click="addWishList(savedSearchDetail)" ng-hide="inWishList(savedSearchDetail)"><i class="material-icons align-middle">add_shopping_cart</i></button>
+                        <button class="btn btn-light cgold" ng-click="removeWishList(savedSearchDetail)" ng-show="inWishList(savedSearchDetail)"><i class="material-icons align-middle">remove_shopping_cart</i></button>
+                    </div>
+                </div>
+                <div class="nav nav-tabs d-flex justify-content-end" id="nav-tab" role="tablist">
+                    <a id="nav-tab-0" class="nav-item nav-link nav-dark active" data-toggle="tab" href="#nav-div-detail-table" role="tab">Product</a>
+                    <a class="nav-item nav-link nav-dark" data-toggle="tab" href="#nav-div-pictures-flow" role="tab">Photos</a>
+                    <a class="nav-item nav-link nav-dark" data-toggle="tab" href="#nav-div-shippinginfo-table" role="tab">Shipping</a>
+                    <a class="nav-item nav-link nav-dark" data-toggle="tab" href="#nav-div-sellerinfo-table" role="tab">Seller</a>
+                    <a class="nav-item nav-link nav-dark" data-toggle="tab" href="#nav-div-similar" role="tab">
+                        <span class="d-none d-sm-none d-md-none d-lg-block d-xl-block">Similar Products</span>
+                        <span class="d-block d-sm-block d-md-block d-lg-none d-xl-none">Related</span>
+                    </a>
+                </div>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="nav-div-detail-table" role="tabpanel">
+                        <div id="div-detail-table" class="w1000 m0auto" ng-if="detail_list!=null">
+                            <table class="table table-striped table-dark">
+                                <tbody>
+                                    <tr>
+                                        <th scope="col">Product Images</th>
+                                        <td>
+                                            <a class="cgreen no-decoration" href="" data-toggle="modal" data-target="#item_detail_image_modal">View Product Images Here</a>
+                                        </td>
+                                    </tr>
+                                    <tr ng-if="detail_list.subtitle.length>0"><th scope="col">SubTitle</th><td>{{detail_list.subtitle}}</td></tr>
+                                    <tr><th scope="col">Price</th><td>{{detail_list.price}}</td></tr>
+                                    <tr><th scope="col">Location</th><td>{{detail_list.location}}</td></tr>
+                                    <tr><th scope="col">Return Policy (US)</th><td>{{detail_list.policy}}</td></tr>
+                                    <tr ng-repeat="result in detail_list.sp">
+                                        <th scope="col">{{result.name}}</th>
+                                        <td>{{result.value}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="modal fade" id="item_detail_image_modal" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Product Images</h5>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div id="div-carousel" class="carousel slide" data-ride="carousel">
+                                                <div class="carousel-inner">
+                                                    <div class="carousel-item blackborder" ng-class="{active : $index==0}" ng-repeat="item in detail_list.picture">
+                                                        <a href="{{item}}" target="_blank">
+                                                            <img class="w-100" ng-src="{{item}}">
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <a class="carousel-control-prev" href="" role="button" data-slide="prev" ng-click="carousel_prev()">
+                                                    <span class="carousel-control-prev-icon bg-black"></span>
+                                                </a>
+                                                <a class="carousel-control-next" href="" role="button" data-slide="next" ng-click="carousel_next()">
+                                                    <span class="carousel-control-next-icon bg-black"></span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-div-pictures-flow" role="tabpanel">
+                        <div id="div-pictures-flow" class="w1000 m0auto row" ng-if="picture_list.length>0">
+                            <div class="col-lg-4 px-1 d-none d-sm-none d-md-none d-lg-block d-xl-block" ng-if="picture_list.length>0">
+                                <div class="rounded-0 borderpic my-2" ng-repeat="picture in picture_list[1]">
+                                    <a href="{{picture}}" target="_blank"><img ng-src="{{picture}}" class="width100"></a>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 px-1 d-none d-sm-none d-md-none d-lg-block d-xl-block" ng-if="picture_list.length>0">
+                                <div class="rounded-0 borderpic my-2" ng-repeat="picture in picture_list[2]">
+                                    <a href="{{picture}}" target="_blank"><img ng-src="{{picture}}" class="width100"></a>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 px-1 d-none d-sm-none d-md-none d-lg-block d-xl-block" ng-if="picture_list.length>0">
+                                <div class="rounded-0 borderpic my-2" ng-repeat="picture in picture_list[3]">
+                                    <a href="{{picture}}" target="_blank"><img ng-src="{{picture}}" class="width100"></a>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 d-block d-sm-block d-md-block d-lg-none d-xl-none" ng-if="picture_list.length>0">
+                                <div class="rounded-0 borderpic my-2" ng-repeat="picture in picture_list[0]">
+                                    <a href="{{picture}}" target="_blank"><img ng-src="{{picture}}" class="width100"></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w1000 m0auto alert alert-warning mobile-mauto10" role="alert" ng-if="picture_list.length==0">No Records.</div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-div-shippinginfo-table" role="tabpanel">
+                        <div id="div-shippinginfo-table" class="w1000 m0auto" ng-if="detail_shipping_info!=null">
+                            <table class="table table-striped table-dark">
+                                <tbody>
+                                    <tr ng-if="detail_shipping_info.cost!=''"><th scope="col">Shipping Cost</th><td>{{detail_shipping_info.cost}}</td></tr>
+                                    <tr ng-if="detail_shipping_info.location!=''"><th scope="col">Shipping Locations</th><td>{{detail_shipping_info.location}}</td></tr>
+                                    <tr ng-if="detail_shipping_info.htime!=''"><th scope="col">Handling time</th><td>{{detail_shipping_info.htime}}</td></tr>
+                                    <tr ng-if="detail_shipping_info.expedited!==''">
+                                        <th scope="col">Expedited Shipping</th>
+                                        <td>
+                                            <i class="material-icons text-success align-middle" ng-show="detail_shipping_info.expedited">done</i>
+                                            <i class="material-icons text-danger align-middle" ng-hide="detail_shipping_info.expedited">clear</i>
+                                        </td>
+                                    </tr>
+                                    <tr ng-if="detail_shipping_info.oneday!==''">
+                                        <th scope="col">One Day Shipping</th>
+                                        <td>
+                                            <i class="material-icons text-success align-middle" ng-show="detail_shipping_info.oneday">done</i>
+                                            <i class="material-icons text-danger align-middle" ng-hide="detail_shipping_info.oneday">clear</i>
+                                        </td>
+                                    </tr>
+                                    <tr ng-if="detail_shipping_info.policy_accepted!==''">
+                                        <th scope="col">Return Accepted</th>
+                                        <td>
+                                            <i class="material-icons text-success align-middle" ng-show="detail_shipping_info.policy_accepted">done</i>
+                                            <i class="material-icons text-danger align-middle" ng-hide="detail_shipping_info.policy_accepted">clear</i>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-div-sellerinfo-table" role="tabpanel">
+                        <div id="div-sellerinfo-table" class="w1000 m0auto" ng-if="detail_seller_info!=null">
+                            <table class="table table-striped table-dark">
+                                <tbody>
+                                    <tr><th scope="col" colspan="2" class="text-uppercase text-center">{{detail_seller_info.username}}</th></tr>
+                                    <tr><th scope="col">Feedback Score</th><td>{{detail_seller_info.score}}</td></tr>
+                                    <tr>
+                                        <th scope="col" class="align-middle">Popularity</th>
+                                        <td class="align-middle position-relative"><round-progress
+                                                max="100"
+                                                ng-attr-current="detail_seller_info.percent"
+                                                radius="20"
+                                                stroke="2"
+                                                color="green"
+                                                bgcolor="yellow"
+                                                clockwise="false"
+                                                class="position-absolute absolutecircle">
+                                            </round-progress>
+                                            <span class="position-absolute absolutespan">{{detail_seller_info.percent}}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">Feedback Rating Star</th>
+                                        <td ng-style="{{detail_seller_info.color}}">
+                                            <i class="material-icons align-middle" ng-show="detail_seller_info.small">star_border</i>
+                                            <i class="material-icons align-middle" ng-hide="detail_seller_info.small">stars</i>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">Top Rated</th>
+                                        <td>
+                                            <i class="material-icons text-success align-middle" ng-show="detail_seller_info.top">done</i>
+                                            <i class="material-icons text-danger align-middle" ng-hide="detail_seller_info.top">clear</i>
+                                        </td>
+                                    </tr>
+                                    <tr ng-if="detail_seller_info.storename!=''">
+                                        <th scope="col">Store Name</th>
+                                        <td>{{detail_seller_info.storename}}</td>
+                                    </tr>
+                                    <tr ng-if="detail_seller_info.storeurl!=''">
+                                        <th scope="col">Buy Product At</th>
+                                        <td><a class="cgreen no-decoration" href="{{detail_seller_info.storeurl}}" target="_blank">store</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-div-similar" role="tabpanel">
+                        <div id="div-similar" class="w1000 m0auto" ng-show="similar_list.length>0">
+                            <div class="row" id="similar-select-row">
+                                <div class="col-lg-2">
+                                    <select ng-model="sort_type" id="sort_type" class="custom-select" ng-change="testNullOrder()">
+                                        <option value="null" selected>Default</option>
+                                        <option value="title">Product Name</option>
+                                        <option value="time">Days Left</option>
+                                        <option value="value">Price</option>
+                                        <option value="ship">Shipping Cost</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-2">
+                                    <select ng-model="sort_order" id="sort_reverse" class="custom-select" ng-disabled="sort_type=='null'" ng-change="setOrder()">
+                                        <option selected value="false">Ascending</option>
+                                        <option value="true">Descending</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="similar-card" class="card bg-black" ng-repeat="similar in similar_list | orderBy:sort_type:sort_reverse | limitTo:similar_showlength">
+                                <div class="card-body row">
+                                    <div class="col-lg-2">
+                                        <a href="{{similar.imageURL}}" target="_blank"><img ng-src="{{similar.imageURL}}" class="hw140 mb20"></a>
+                                    </div>
+                                    <div class="col-lg-10">
+                                        <div><a class="titlegreen" href="{{similar.viewItemURL}}" target="_blank">{{similar.title}}</a></div>
+                                        <div class="pricegreen">Price: {{similar.valueStr}}</div>
+                                        <div class="shipyellow">Shipping Cost: {{similar.shipStr}}</div>
+                                        <div class="text-white">Days Left: {{similar.timeStr}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="showmoreless" ng-show="has_showmoretab&&similar_list.length>0">
+                                <div class="d-flex justify-content-center"><button class="btn btn-black" ng-click="similarShowMore()" ng-show="showmore_button">Show More</button></div>
+                                <div class="d-flex justify-content-center"><button class="btn btn-black" ng-click="similarShowLess()" ng-hide="showmore_button">Show Less</button></div>
+                            </div>
+                        </div>
+                        <div class="w1000 m0auto alert alert-warning mobile-mauto10" role="alert" ng-if="similar_list.length==0">No Records.</div>
+                    </div>
+                </div>
+            </nav>
+            <div class="alert alert-warning mobile-mauto10 w1000 m0auto" role="alert" ng-if="!search_detail_err">{{search_detail_err_msg}}</div>
+        </div>  
+    </div>
+    <div class="position-relative" ng-hide="show_result">
+        <div class="div-anime" ng-show="showWish" id="div-anime-2">
+            <div id="div-wish-table" class="w1000 m0auto table1000">
+                <div id="div-wish-table-detail" class="d-flex flex-row-reverse">
+                    <button class="btn btn-light text-black" ng-disabled="savedWishDetail==null" ng-click="go_saved_detail_wish()">
+                        <span class="align-middle">Detail </span>
+                        <i class="material-icons align-middle">chevron_right</i>
+                    </button>
+                </div>
+                <table class="table table-striped table-dark table-hover" ng-if="wish_list.length>0">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Image</th>
+                            <th scope="col">Title</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Shipping</th>
+                            <th scope="col">Zip</th>
+                            <th scope="col">Seller</th>
+                            <th scope="col" class="w92">Wish List</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="result in wish_list" ng-class="{'table-secondary':testWishHighlight(result.itemId)}">
+                            <td>{{$index+1}}</td>
+                            <td><a href="{{result.galleryURL}}" target="_blank"><img ng-src="{{result.galleryURL}}" class="hw100"></a></td>
+                            <td>
+                                <div class="w300">
+                                    <md-tooltip>{{result.title}}</md-tooltip>
+                                    <a href="" ng-click="go_wishdetail(result)" class="text-nowrap">{{result.shorten_title}}</a>
+                                </div>
+                            </td>
+                            <td>{{result.value}}</td>
+                            <td class="w124">{{result.shippingCost}}</td>
+                            <td>{{result.postalCode}}</td>
+                            <td class="text-uppercase breakword w234">{{result.seller}}</td>
+                            <td><button class="btn bg-white cgold" ng-click="removeWishList(result)"><i class="material-icons align-middle">remove_shopping_cart</i></button></td>
+                        </tr>
+                        <tr>
+                            <td></td><td></td><td></td><td></td><td></td><td></td>
+                            <td>Total shopping</td>
+                            <td>${{totalShoppingFee}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="alert alert-warning mobile-mauto10" role="alert" ng-if="wish_list.length==0">No Records.</div>
+            </div>
+        </div>
+        <div class="div-anime" ng-hide="showWish" id="div-anime-3">
+            <div class="progress w1000 m0auto" ng-if="progressBarWishDetail">
+                <div class="progress-bar progress-bar-animated progress-bar-striped" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <nav class="w1000 m0auto mobile-mauto10" ng-show="search_detail_err&&detail_list!=null">
+                <div class="d-flex justify-content-center font-weight-bold fz20 text-center">{{detail_list.title}}</div>
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-light" ng-click="go_list_wish()">
+                        <i class="material-icons align-middle">chevron_left</i>
+                        <span class="align-middle"> List</span>
+                    </button>
+                    <div class="d-flex flex-row" ng-if="savedWishDetail!=null">
+                        <a class="btn bg-white p-0" href="{{detail_list.facebookShareUrl}}" target="_blank"><img src="http://csci571.com/hw/hw8/Images/facebook.png" class="hw38"></a>
+                        <button class="btn btn-light" ng-click="addWishList(savedWishDetail)" ng-hide="inWishList(savedWishDetail)"><i class="material-icons align-middle">add_shopping_cart</i></button>
+                        <button class="btn btn-light cgold" ng-click="removeWishList(savedWishDetail)" ng-show="inWishList(savedWishDetail)"><i class="material-icons align-middle">remove_shopping_cart</i></button>
+                    </div>
+                </div>
+                <div class="nav nav-tabs d-flex justify-content-end" id="nav-tabwish" role="tablist">
+                    <a id="nav-tab-1" class="nav-item nav-link nav-dark active" data-toggle="tab" href="#nav-div-detail-table-wish" role="tab">Product</a>
+                    <a class="nav-item nav-link nav-dark" data-toggle="tab" href="#nav-div-pictures-flow-wish" role="tab">Photos</a>
+                    <a class="nav-item nav-link nav-dark" data-toggle="tab" href="#nav-div-shippinginfo-table-wish" role="tab">Shipping</a>
+                    <a class="nav-item nav-link nav-dark" data-toggle="tab" href="#nav-div-sellerinfo-table-wish" role="tab">Seller</a>
+                    <a class="nav-item nav-link nav-dark" data-toggle="tab" href="#nav-div-similar-wish" role="tab">
+                        <span class="d-none d-sm-none d-md-none d-lg-block d-xl-block">Similar Products</span>
+                        <span class="d-block d-sm-block d-md-block d-lg-none d-xl-none">Related</span>
+                    </a>
+                </div>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="nav-div-detail-table-wish" role="tabpanel">
+                        <div id="div-detail-table-wish" class="w1000 m0auto" ng-if="detail_list!=null">
+                            <table class="table table-striped table-dark">
+                                <tbody>
+                                    <tr>
+                                        <th scope="col">Product Images</th>
+                                        <td>
+                                            <a class="cgreen no-decoration" href="" data-toggle="modal" data-target="#item_detail_image_modal_wish">View Product Images Here</a>
+                                        </td>
+                                    </tr>
+                                    <tr ng-if="detail_list.subtitle.length>0"><th scope="col">SubTitle</th><td>{{detail_list.subtitle}}</td></tr>
+                                    <tr><th scope="col">Price</th><td>{{detail_list.price}}</td></tr>
+                                    <tr><th scope="col">Location</th><td>{{detail_list.location}}</td></tr>
+                                    <tr><th scope="col">Return Policy (US)</th><td>{{detail_list.policy}}</td></tr>
+                                    <tr ng-repeat="result in detail_list.sp">
+                                        <th scope="col">{{result.name}}</th>
+                                        <td>{{result.value}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="modal fade" id="item_detail_image_modal_wish" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Product Images</h5>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div id="div-carousel-wish" class="carousel slide" data-ride="carousel">
+                                                <div class="carousel-inner">
+                                                    <div class="carousel-item blackborder" ng-class="{active : $index==0}" ng-repeat="item in detail_list.picture">
+                                                        <a href="{{item}}" target="_blank">
+                                                            <img class="w-100" ng-src="{{item}}">
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <a class="carousel-control-prev" href="" role="button" data-slide="prev" ng-click="carousel_prev_wish()">
+                                                    <span class="carousel-control-prev-icon bg-black"></span>
+                                                </a>
+                                                <a class="carousel-control-next" href="" role="button" data-slide="next" ng-click="carousel_next_wish()">
+                                                    <span class="carousel-control-next-icon bg-black"></span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-div-pictures-flow-wish" role="tabpanel">
+                        <div id="div-pictures-flow-wish" class="w1000 m0auto row" ng-if="picture_list.length>0">
+                            <div class="col-lg-4 px-1 d-none d-sm-none d-md-none d-lg-block d-xl-block" ng-if="picture_list.length>0">
+                                <div class="rounded-0 borderpic my-2" ng-repeat="picture in picture_list[1]">
+                                    <a href="{{picture}}" target="_blank"><img ng-src="{{picture}}" class="width100"></a>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 px-1 d-none d-sm-none d-md-none d-lg-block d-xl-block" ng-if="picture_list.length>0">
+                                <div class="rounded-0 borderpic my-2" ng-repeat="picture in picture_list[2]">
+                                    <a href="{{picture}}" target="_blank"><img ng-src="{{picture}}" class="width100"></a>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 px-1 d-none d-sm-none d-md-none d-lg-block d-xl-block" ng-if="picture_list.length>0">
+                                <div class="rounded-0 borderpic my-2" ng-repeat="picture in picture_list[3]">
+                                    <a href="{{picture}}" target="_blank"><img ng-src="{{picture}}" class="width100"></a>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 d-block d-sm-block d-md-block d-lg-none d-xl-none" ng-if="picture_list.length>0">
+                                <div class="rounded-0 borderpic my-2" ng-repeat="picture in picture_list[0]">
+                                    <a href="{{picture}}" target="_blank"><img ng-src="{{picture}}" class="width100"></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w1000 m0auto alert alert-warning mobile-mauto10" role="alert" ng-if="picture_list.length==0">No Records.</div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-div-shippinginfo-table-wish" role="tabpanel">
+                        <div id="div-shippinginfo-table-wish" class="w1000 m0auto" ng-if="detail_shipping_info!=null">
+                            <table class="table table-striped table-dark">
+                                <tbody>
+                                    <tr ng-if="detail_shipping_info.cost!=''"><th scope="col">Shipping Cost</th><td>{{detail_shipping_info.cost}}</td></tr>
+                                    <tr ng-if="detail_shipping_info.location!=''"><th scope="col">Shipping Locations</th><td>{{detail_shipping_info.location}}</td></tr>
+                                    <tr ng-if="detail_shipping_info.htime!=''"><th scope="col">Handling time</th><td>{{detail_shipping_info.htime}}</td></tr>
+                                    <tr ng-if="detail_shipping_info.expedited!==''">
+                                        <th scope="col">Expedited Shipping</th>
+                                        <td>
+                                            <i class="material-icons text-success align-middle" ng-show="detail_shipping_info.expedited">done</i>
+                                            <i class="material-icons text-danger align-middle" ng-hide="detail_shipping_info.expedited">clear</i>
+                                        </td>
+                                    </tr>
+                                    <tr ng-if="detail_shipping_info.oneday!==''">
+                                        <th scope="col">One Day Shipping</th>
+                                        <td>
+                                            <i class="material-icons text-success align-middle" ng-show="detail_shipping_info.oneday">done</i>
+                                            <i class="material-icons text-danger align-middle" ng-hide="detail_shipping_info.oneday">clear</i>
+                                        </td>
+                                    </tr>
+                                    <tr ng-if="detail_shipping_info.policy_accepted!==''">
+                                        <th scope="col">Return Accepted</th>
+                                        <td>
+                                            <i class="material-icons text-success align-middle" ng-show="detail_shipping_info.policy_accepted">done</i>
+                                            <i class="material-icons text-danger align-middle" ng-hide="detail_shipping_info.policy_accepted">clear</i>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-div-sellerinfo-table-wish" role="tabpanel">
+                        <div id="div-sellerinfo-table-wish" class="w1000 m0auto" ng-if="detail_seller_info!=null">
+                            <table class="table table-striped table-dark">
+                                <tbody>
+                                    <tr><th scope="col" colspan="2" class="text-uppercase text-center">{{detail_seller_info.username}}</th></tr>
+                                    <tr><th scope="col">Feedback Score</th><td>{{detail_seller_info.score}}</td></tr>
+                                    <tr>
+                                        <th scope="col" class="align-middle">Popularity</th>
+                                        <td class="align-middle position-relative"><round-progress
+                                                max="100"
+                                                ng-attr-current="detail_seller_info.percent"
+                                                radius="20"
+                                                stroke="2"
+                                                color="green"
+                                                bgcolor="yellow"
+                                                clockwise="false"
+                                                class="position-absolute absolutecircle">
+                                            </round-progress>
+                                            <span class="position-absolute absolutespan">{{detail_seller_info.percent}}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">Feedback Rating Star</th>
+                                        <td ng-style="{{detail_seller_info.color}}">
+                                            <i class="material-icons align-middle" ng-show="detail_seller_info.small">star_border</i>
+                                            <i class="material-icons align-middle" ng-hide="detail_seller_info.small">stars</i>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">Top Rated</th>
+                                        <td>
+                                            <i class="material-icons text-success align-middle" ng-show="detail_seller_info.top">done</i>
+                                            <i class="material-icons text-danger align-middle" ng-hide="detail_seller_info.top">clear</i>
+                                        </td>
+                                    </tr>
+                                    <tr ng-if="detail_seller_info.storename!=''">
+                                        <th scope="col">Store Name</th>
+                                        <td>{{detail_seller_info.storename}}</td>
+                                    </tr>
+                                    <tr ng-if="detail_seller_info.storeurl!=''">
+                                        <th scope="col">Buy Product At</th>
+                                        <td><a class="cgreen no-decoration" href="{{detail_seller_info.storeurl}}" target="_blank">store</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-div-similar-wish" role="tabpanel">
+                        <div id="div-similar-wish" class="w1000 m0auto" ng-show="similar_list.length>0">
+                            <div class="row" id="similar-select-row-wish">
+                                <div class="col-lg-2">
+                                    <select ng-model="sort_type" id="sort_type_wish" class="custom-select" ng-change="testNullOrder()">
+                                        <option value="null" selected>Default</option>
+                                        <option value="title">Product Name</option>
+                                        <option value="time">Days Left</option>
+                                        <option value="value">Price</option>
+                                        <option value="ship">Shipping Cost</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-2">
+                                    <select ng-model="sort_order" id="sort_reverse_wish" class="custom-select" ng-disabled="sort_type=='null'" ng-change="setOrder()">
+                                        <option selected value="false">Ascending</option>
+                                        <option value="true">Descending</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="similar-card-wish" class="card bg-black" ng-repeat="similar in similar_list | orderBy:sort_type:sort_reverse | limitTo:similar_showlength">
+                                <div class="card-body row">
+                                    <div class="col-lg-2">
+                                        <a href="{{similar.imageURL}}" target="_blank"><img ng-src="{{similar.imageURL}}" class="hw140 mb20"></a>
+                                    </div>
+                                    <div class="col-lg-10">
+                                        <div><a class="titlegreen" href="{{similar.viewItemURL}}" target="_blank">{{similar.title}}</a></div>
+                                        <div class="pricegreen">Price: {{similar.valueStr}}</div>
+                                        <div class="shipyellow">Shipping Cost: {{similar.shipStr}}</div>
+                                        <div class="text-white">Days Left: {{similar.timeStr}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="showmoreless-wish" ng-show="has_showmoretab&&similar_list.length>0">
+                                <div class="d-flex justify-content-center"><button class="btn btn-black" ng-click="similarShowMore()" ng-show="showmore_button">Show More</button></div>
+                                <div class="d-flex justify-content-center"><button class="btn btn-black" ng-click="similarShowLess()" ng-hide="showmore_button">Show Less</button></div>
+                            </div>
+                        </div>
+                        <div class="w1000 m0auto alert alert-warning mobile-mauto10" role="alert" ng-if="similar_list.length==0">No Records.</div>
+                    </div>
+                    
+                </div>
+            </nav>
+            <div class="alert alert-warning mobile-mauto10 w1000 m0auto" role="alert" ng-if="!search_detail_err">{{search_detail_err_msg}}</div>
+        </div>
+    </div>
+    
+</body>
+</html>
