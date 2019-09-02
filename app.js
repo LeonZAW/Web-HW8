@@ -2,11 +2,12 @@ const request = require("request")
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 1337;
-const APPID = "ZianWang-hw6leon-PRD-416e557a4-760daf13";
-const geo_username = "werxcvl";
-const fb_app_id = "2325682177645315";
-const gl_search_engine_id = "009867248394399651473%3Aqpab7poqqqs";
-const gl_ak = "AIzaSyA_UXlADhAKbbdL0KaFmcvrv6gSW5kSOj8";
+//for security
+const APPID = "";
+const geo_username = "";
+const fb_app_id = "";
+const gl_search_engine_id = "";
+const gl_ak = "";
 
 app.use(express.static("public"))
 
