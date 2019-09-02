@@ -6,7 +6,7 @@ const APPID = "ZianWang-hw6leon-PRD-416e557a4-760daf13";
 const geo_username = "werxcvl";
 const fb_app_id = "2325682177645315";
 const gl_search_engine_id = "009867248394399651473%3Aqpab7poqqqs";
-const gl_api_key = "AIzaSyA_UXlADhAKbbdL0KaFmcvrv6gSW5kSOj8";
+const gl_ak = "AIzaSyA_UXlADhAKbbdL0KaFmcvrv6gSW5kSOj8";
 
 app.use(express.static("public"))
 
@@ -449,7 +449,7 @@ function buildPictureUrl(query){
     var url = url_base+"?q="+encodeURIComponent(key);
     url += "&cx="+gl_search_engine_id;
     url += "&imgSize=huge&imgType=news&num="+request_number;
-    url += "&searchType=image&key="+gl_api_key;
+    url += "&searchType=image&key="+gl_ak;
     return url;
 }
 
