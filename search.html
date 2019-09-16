@@ -438,7 +438,7 @@
     <div class="position-relative" ng-hide="show_result">
         <div class="div-anime" ng-show="showWish" id="div-anime-2">
             <div id="div-wish-table" class="w1140 m0auto" style="overflow:auto">
-                <div id="div-wish-table-detail" class="d-flex flex-row-reverse table1000">
+                <div id="div-wish-table-detail" class="d-flex flex-row-reverse table1000" ng-if="wish_list.length>0">
                     <button class="btn btn-light text-black" ng-disabled="savedWishDetail==null" ng-click="go_saved_detail_wish()" style="margin-right: -20px;">
                         <span class="align-middle">Detail </span>
                         <i class="material-icons align-middle">chevron_right</i>
