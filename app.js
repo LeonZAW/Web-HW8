@@ -36,7 +36,7 @@ app.get("/search_list",(req,res)=>{
             var adata = assembleSearchResult(data);
             res.send(adata);
         } catch (err) {
-            var error_data = [false,"Products unavailable."];
+            var error_data = [false,"Failed to fetch search results"];
             res.send(error_data);
         }
     })
@@ -57,6 +57,51 @@ app.get("/item_detail",(req,res)=>{
     })
 });
 
+app.get("/item_info",(req,res)=>{
+    var url = buildDetailUrl(req.query);
+    // console.log(url);
+    request(url, (error, response, body)=>{
+        try {
+            var data = JSON.parse(body);
+            var adata = assembleDetailInfo(data);
+            res.send(adata);
+        } catch (err) {
+            var error_data = [false,"Details unavailable."];
+            res.send(error_data);
+        }
+    })
+});
+
+app.get("/item_facebook",(req,res)=>{
+    var url = buildDetailUrl(req.query);
+    // console.log(url);
+    request(url, (error, response, body)=>{
+        try {
+            var data = JSON.parse(body);
+            var adata = assembleDetailFacebook(data);
+            res.send(adata);
+        } catch (err) {
+            var error_data = [false,"Details unavailable."];
+            res.send(error_data);
+        }
+    })
+});
+app.get("/item_shipping",(req,res)=>{
+    var url = buildDetailUrl(req.query);
+    // console.log(url);
+    request(url, (error, response, body)=>{
+        try {
+            var data = JSON.parse(body);
+            var adata = assembleDetailShipping(data);
+            res.send(adata);
+        } catch (err) {
+            var error_data = [false,"Details unavailable."];
+            res.send(error_data);
+        }
+    })
+});
+
+
 app.get("/similar_item",(req,res)=>{
     var url = buildSimilarUrl(req.query);
     // console.log(url);
@@ -71,6 +116,9 @@ app.get("/similar_item",(req,res)=>{
         }
     })
 });
+
+
+
 
 app.get("/gl_picture",(req,res)=>{
     var url = buildPictureUrl(req.query);
@@ -89,6 +137,23 @@ app.get("/gl_picture",(req,res)=>{
 
 app.get("/", (req, res) => res.sendFile("public/search.html", { root: __dirname }));
 app.get("/searchProducts", (req, res) => res.sendFile("public/search.html", { root: __dirname }));
+
+app.get("/item_picture",(req,res)=>{
+    var url = buildPictureUrl(req.query);
+    // console.log(url);
+    request(url, (error, response, body)=>{
+        try {
+            var data = JSON.parse(body);
+            var adata = assembleGooglePictures(data);
+            res.send(adata);
+        } catch (err) {
+            var error_data = [false,"Pictures unavailable."];
+            res.send(error_data);
+        }
+    })
+});
+
+
 app.listen(port);
 
 function buildSearchUrl(query){
@@ -148,7 +213,7 @@ function assembleSearchResult(result){
     var searchResult = result["findItemsAdvancedResponse"][0]["searchResult"][0];
     var count = searchResult["@count"];
     if(count==0){
-        var errmsg = "No Records.";
+        var errmsg = "Failed to fetch search results";
         requestResult = [false,errmsg];
         return requestResult;
     }
@@ -195,7 +260,7 @@ function getItemByIndex(items, index){
     try {
         var item_shippingInfo = item["shippingInfo"][0]["shippingServiceCost"][0]["__value__"];
         if(item_shippingInfo==0){
-            return_item["shippingCost"] = "Free Shipping";
+            return_item["shippingCost"] = "FREE SHIPPING";
         }else{
             return_item["shippingCost"] = "$"+item_shippingInfo;
         }
@@ -209,7 +274,7 @@ function getItemByIndex(items, index){
         try {
             var cost = shippingInfo["shippingServiceCost"][0]["__value__"];
             if(cost==0){
-                sinfo["cost"] = "Free Shipping";
+                sinfo["cost"] = "FREE SHIPPING";
             }else{
                 sinfo["cost"] = "$"+cost;
             }
@@ -283,6 +348,22 @@ function getItemByIndex(items, index){
     }
 
     try {
+        var item_condition_ios = item["condition"][0]["conditionId"][0];
+        if(item_condition_ios=="1000"){
+            return_item["condition_ios"] = "NEW";
+        } else if(item_condition_ios=="2000"||item_condition_ios=="2500"){
+            return_item["condition_ios"] = "REFURBISHED";
+        } else if(item_condition_ios=="3000"||item_condition_ios=="4000"||item_condition_ios=="5000"||item_condition_ios=="6000"){
+            return_item["condition_ios"] = "USED";
+        } else{
+            return_item["condition_ios"] = "NA";
+        }
+    } catch (err) {
+        return_item["condition_ios"] = "NA";
+    }
+
+
+    try {
         var item_galleryURL = item["galleryURL"][0];
         return_item["galleryURL"] = item_galleryURL;
     } catch (err) {
@@ -308,7 +389,7 @@ function buildDetailUrl(query){
     var operation = "GetSingleItem";
     var url = url_base+"?callname="+operation+"&responseencoding=JSON&appid="+APPID;
     url += "&siteid=0&version=967&ItemID="+itemId;
-    url += "&IncludeSelector=Description,Details,ItemSpecifics";
+    url += "&IncludeSelector=Description,Details,ItemSpecifics,ShippingCosts";
     return url;
 }
 
@@ -376,11 +457,67 @@ function assembleDetailResult(item_detail){
     return [true,detail_result];
 }
 
+function assembleDetailInfo(item_detail){
+    var ack_result = item_detail["Ack"];
+    if(ack_result=="Failure"){
+        var error_message = item_detail["Errors"][0]["ShortMessage"];
+        return [false, error_message];
+    }
+    var itemResult = item_detail["Item"]
+    var picture = itemResult["PictureURL"];
+    var price = itemResult["CurrentPrice"];
+    var value = price["Value"];
+    var title = itemResult["Title"];
+    var item_id = itemResult["ItemID"];
+
+    var detail_result = {};
+    detail_result["picture"] = picture;
+    detail_result["price"] = "$"+value;
+    detail_result["title"] = title;
+    detail_result["itemId"] = item_id;
+    var sp = [];
+    try {
+        var specifics = itemResult["ItemSpecifics"]["NameValueList"];
+        for(var i=0;i<specifics.length;i++){
+            var specific = specifics[i];
+            sp.push({"name":specific["Name"],"value":specific["Value"][0]});
+        }
+    } catch (error) {
+    }
+    detail_result["sp"] = sp;
+
+    return [true,detail_result];
+}
+
+function assembleDetailFacebook(item_detail){
+    var ack_result = item_detail["Ack"];
+    if(ack_result=="Failure"){
+        var error_message = item_detail["Errors"][0]["ShortMessage"];
+        return [false, error_message];
+    }
+    var itemResult = item_detail["Item"]
+    var viewItemURL = itemResult["ViewItemURLForNaturalSearch"];
+    var price = itemResult["CurrentPrice"];
+    var value = price["Value"];
+    var title = itemResult["Title"];
+
+    var item_id = itemResult["ItemID"];
+
+    var detail_result = {};
+    var facebookShareUrl = buildFacebookLink(viewItemURL,title,value)
+
+    detail_result["facebookShareUrl"] = facebookShareUrl;
+    detail_result["itemId"] = item_id;
+    
+    return [true,detail_result];
+}
+
 function buildFacebookLink(ebay_url,productName,price){
     var url_base = "https://www.facebook.com/dialog/share";
     var url = url_base+"?app_id="+fb_app_id;
     url += "&display=popup&href="+encodeURIComponent(ebay_url);
-    url += "&quote="+encodeURIComponent("Buy "+productName+" at $"+price+" from link below");
+    url += "&hashtag="+encodeURIComponent("#CSCI571Spring2019Ebay");
+    url += "&quote="+encodeURIComponent("Buy "+productName+" for $"+price+" from Ebay!");
     // console.log(url);
     return url;
 }
@@ -391,6 +528,123 @@ function buildFacebookLink2(ebay_url,productName,price){
     url += "&quote="+encodeURIComponent("Buy "+productName+" at $"+price+" from link below");
     // console.log(url);
     return url;
+}
+
+function assembleDetailShipping(item_detail){
+    var ack_result = item_detail["Ack"];
+    if(ack_result=="Failure"){
+        var error_message = item_detail["Errors"][0]["ShortMessage"];
+        return [false, error_message];
+    }
+    var itemResult = item_detail["Item"]
+    
+    
+    var detail_result = [];
+    // Seller
+    var seller = [];
+    try {
+        var storeUrl = itemResult["Storefront"]["StoreURL"];
+        var storeName = itemResult["Storefront"]["StoreName"];
+        seller.push({"title":"Store Name", "value":{"url":storeUrl,"name":storeName}});
+    } catch (err) {
+    }
+
+    try {
+        var colorList = ["yellow","blue","turquoise","purple","red","green","silver"];
+        var sellerExist = itemResult["Seller"];
+        if(!(sellerExist==null||sellerExist==="")){
+            var sellerFeedbackRatingStar = itemResult["Seller"]["FeedbackRatingStar"];
+            var sellerFeedbackScore = itemResult["Seller"]["FeedbackScore"];
+            var sellerPositiveFeedbackPercent = itemResult["Seller"]["PositiveFeedbackPercent"];
+            var percent = (sellerPositiveFeedbackPercent.toFixed(2)*100/100).toString();
+            sellerFeedbackRatingStar = sellerFeedbackRatingStar.toLowerCase();
+            var small = !sellerFeedbackRatingStar.endsWith("shooting");
+            var color = sellerFeedbackRatingStar.replace("shooting","");
+            var colorIndex = colorList.indexOf(color);
+            if(colorIndex!=-1){
+                seller.push({"title":"Feedback Score", "value":sellerFeedbackScore});
+                seller.push({"title":"Popularity", "value":percent});
+                seller.push({"title":"Feedback Star", "value":{"small":small,"colorIndex":colorIndex}});
+            }else{
+                seller.push({"title":"Feedback Score", "value":sellerFeedbackScore});
+                seller.push({"title":"Popularity", "value":percent});
+            }
+        }
+    } catch (err) {
+    }
+    if(seller.length!=0){
+        detail_result.push(seller);
+    }
+    // Shipping Info
+    var shipping = []
+    try {
+        var shippingCost = itemResult["ShippingCostSummary"]["ShippingServiceCost"]["Value"];
+        var cost = "";
+        if(shippingCost==0)
+            cost = "FREE";
+        else{
+            cost = "$" + shippingCost;
+        }
+        shipping.push({"title":"Shipping Cost","value":cost});
+    } catch (err) {
+    }
+
+    try {
+        var globalShipping = itemResult["GlobalShipping"];
+        if(!(globalShipping==null||globalShipping==="")){
+            var global = globalShipping?"Yes":"No";
+            shipping.push({"title":"Global Shipping","value":global});
+        }
+    } catch (err) {
+    }
+
+    try {
+        var handlingTime = itemResult["HandlingTime"];
+        if(!(handlingTime==null||handlingTime==="")){
+            var htime = "";
+            if (handlingTime==0||handlingTime==1){
+                htime = handlingTime+" Day";
+            }else{
+                htime = handlingTime+" Days";
+            }
+            shipping.push({"title":"Handling Time","value":htime});
+        }
+    } catch (err) {
+    }
+    if(shipping.length!=0){
+        detail_result.push(shipping);
+    }
+    // Return Policy
+    var return_policy = [];
+    try {
+        var return_accepted = itemResult["ReturnPolicy"]["ReturnsAccepted"];
+        if(!(return_accepted==null||return_accepted===""))
+            return_policy.push({"title":"Policy","value":return_accepted});
+    } catch (err) {
+    }
+    try {
+        var return_refund = itemResult["ReturnPolicy"]["Refund"];
+        if(!(return_refund==null||return_refund===""))
+            return_policy.push({"title":"Refund Mode","value":return_refund});
+    } catch (err) {
+    }
+    try {
+        var return_within = itemResult["ReturnPolicy"]["ReturnsWithin"];
+        if(!(return_within==null||return_within===""))
+            return_policy.push({"title":"Return Within","value":return_within});
+    } catch (err) {
+    }
+    try {
+        var return_paidby = itemResult["ReturnPolicy"]["ShippingCostPaidBy"];
+        if(!(return_paidby==null||return_paidby===""))
+            return_policy.push({"title":"Shipping Cost Paid By","value":return_paidby});
+    } catch (err) {
+    }
+    if(return_policy.length!=0){
+        detail_result.push(return_policy);
+    }
+
+    return [true,detail_result];
 }
 
 function buildSimilarUrl(query){
@@ -438,7 +692,12 @@ function getSimilarByIndex(similarResult, i){
     similar_item["time"] = parseInt(timeLeft);
     similar_item["valueStr"] = "$"+buyItNowPrice;
     similar_item["shipStr"] = "$"+shippingCost;
-    similar_item["timeStr"] = timeLeft;
+    if(timeLeft==="0"||timeLeft==="1"){
+        similar_item["timeStr"] = timeLeft+" Day Left";
+    }else{
+        similar_item["timeStr"] = timeLeft+" Days Left";
+    }
+    
     return similar_item;
 }
 
@@ -470,6 +729,20 @@ function assemblePictureResult(query){
         var item = items[i];
         return_items[0].push(item["link"]);
         return_items[assemble_list[i]].push(item["link"]);
+    }
+    return [true,return_items];
+}
+
+function assembleGooglePictures(query){
+    var count = query["searchInformation"]["totalResults"];
+    if(count==0){
+        return [false,"No Records."];
+    }
+    var items = query["items"];
+    var return_items = []
+    for(var i=0;i<items.length;i++){
+        var item = items[i];
+        return_items.push(item["link"]);
     }
     return [true,return_items];
 }

@@ -48,6 +48,9 @@ html{
     html{
         overflow-x: hidden;
     }
+    .w1140{
+        width: 1140px;
+    }
 }
 
 .table1000{
