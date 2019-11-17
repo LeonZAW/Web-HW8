@@ -1,6 +1,6 @@
 # Web Technologies Homework 8
-Homework 8 for Web Technologies
-iOS version of Homework8 ([Homework 9](https://github.com/LeonZAW/Web-HW9))
+Homework 8 for Web Technologies  
+[iOS version of Homework 8](https://github.com/LeonZAW/Web-HW9)
 ## Objectives
 * Get familiar with the AJAX and JSON technologies
 * Use a combination of HTML5, Bootstrap, Angular and jQuery on client side
